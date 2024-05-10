@@ -20,7 +20,7 @@ for col in df.columns:
 df = df.rename(columns=lower_dict)
 df = df.rename(columns={"odname": "country"})
 
-# cleansing the dataset  
+# cleanse the dataset  
 df = df[df.areaname != 'World']
 df = df.replace({"..": 0})
 replace_dict = {
@@ -34,23 +34,22 @@ replace_dict = {
 }
 df["country"] = df["country"].replace(replace_dict)
 
-
-# defining year list
+# define year list
 year_list = [str(i) for i in range(1990, 2014, 1)]
 
-# Create a dash application layout
+# create a dash application layout
 app = dash.Dash(__name__)
 
 app.layout = html.Div(
     [
-        # TASK 2.1 Add title to the dashboard
+        # 1. add title to the dashboard
         html.H1(
             "Italian Migration Statistics Dashboard",
             style={"textAlign": "center", "color": "#503D36", "font-size": 24},
         ),
         html.Div(
             [
-                # TASK 2.2: Add Statistics menu
+                # 2. add Statistics menu
                 html.Label("Select Statistics:"),
                 dcc.Dropdown(
                     id="select-statistics",
@@ -67,7 +66,7 @@ app.layout = html.Div(
                 ),
             ]
         ),
-        # Add second Year menu
+        # 3. add Year menu
         html.Div(
             dcc.Dropdown(
                 id="select-year",
@@ -77,7 +76,7 @@ app.layout = html.Div(
             )
         ),
 
-        # add Continent menu
+        # 4. add Continent menu
         html.Div(
             dcc.Dropdown(
                 id="select-continent",
@@ -88,7 +87,7 @@ app.layout = html.Div(
         ),
         html.Div(
             [
-                # TASK 2.3: Add a division for output display
+                # 5. add a division for output display
                 html.Div(
                     id="output-container",
                     className="chart-grid",
@@ -100,8 +99,8 @@ app.layout = html.Div(
 )
     
 
-# Callback for plotting
-# Define the callback function to update the input container based on the selected statistics
+# callback for plotting
+# define the callback function to update the input container based on the selected statistics
 @app.callback(
     Output(component_id="output-container", component_property="children"),
     [
@@ -128,8 +127,9 @@ def update_output_container(input_year, selected_statistics, selected_continent)
         title=f"Count of {selected_statistics} from/to Italy",
     )
     chart_1 = dcc.Graph(figure=fig1)
+    
     ####################################################
-    # Plot 2 Proportion of Im/Em by Continent in Year Selected
+    # Plot 2: Proportion of Im/Em by Continent in Year Selected
     if (input_year is not None) and (selected_continent is not None):
         # filter data by continent
         continent = data.loc[data['areaname'] == selected_continent]
@@ -155,7 +155,7 @@ def update_output_container(input_year, selected_statistics, selected_continent)
         chart_2 = None
 
     ###########################################################
-    # Plot 3 Top 5 Countries of Im/Em from/to Italy in Year Selected 
+    # Plot 3: Top 5 Countries of Im/Em from/to Italy in Year Selected 
     if (input_year is not None):
         countries = data.groupby('country')[input_year].sum().nlargest().reset_index()
         
@@ -198,6 +198,7 @@ def update_output_container(input_year, selected_statistics, selected_continent)
         chart_4 = None
     ########################################################
 
+    # return charts
     html_return = [
         html.Div(
             className="chart-item",
@@ -215,8 +216,6 @@ def update_output_container(input_year, selected_statistics, selected_continent)
     
     return html_return
         
-
-
-# Run the Dash app
+# run the Dash app
 if __name__ == "__main__":
     app.run_server(port=6006, debug=True)
